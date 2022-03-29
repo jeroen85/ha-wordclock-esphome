@@ -8,7 +8,7 @@ esphome:
     priority: 800
     then:
       - light.turn_on: 
-          id: fastledlight
+          id: neopixelbuslight
           
 substitutions:
   devicename: wordclock
@@ -38,16 +38,85 @@ ota:
 logger:
   esp8266_store_log_strings_in_flash: false
 
-
 light:
-  - platform: fastled_clockless
-    id: fastledlight
-    chipset: WS2812
-    pin: GPIO03
-    num_leds: 125
-    rgb_order: BRG
-    name: ${friendly_name}
-  
+  - platform: neopixelbus
+    id: neopixelbuslight
+    type: GRBW
+    variant: SK6812
+    pin: D5
+    restore_mode: RESTORE_DEFAULT_ON
+    num_leds: 114
+    name: ${friendly_name}    
+
+sensor:
+  - platform: adc
+    pin: A0
+    id: ldr_raw
+    name: ${friendly_name} LDR (raw)
+    unit_of_measurement: "V"
+    icon: mdi:sine-wave
+    # filters:
+    #   - multiply: 3.3   
+    update_interval: 0.1s
+    filters:
+      - exponential_moving_average:
+          send_every: 50
+    
+  - platform: template    
+    name: ${friendly_name} LDR
+    id: ldr
+    icon: "mdi:brightness-percent"
+    unit_of_measurement: "%"
+    update_interval: 5s
+    lambda: |-
+      return id(ldr_raw).state;      
+    filters:
+      - calibrate_linear:
+          # Map 0.0-1.0 (from sensor) to 0.0-100.0 (true value)
+          - 0.0 -> 3.0
+          - 0.8 -> 100.0
+      - lambda: if (x > 100.0) return 100.0; else return (x);  
+
+switch:
+  - platform: template
+    name: ${friendly_name} automatic brightness (LDR)
+    icon: mdi:brightness-auto
+    optimistic: true
+    id: useldr
+    restore_state: on
+  - platform: template
+    name: ${friendly_name} show date
+    icon: mdi:calendar-month
+    optimistic: true
+    id: showdate
+    restore_state: on
+  - platform: template
+    name: ${friendly_name} color cycle
+    icon: mdi:palette
+    optimistic: true
+    id: colorcycle  
+    restore_state: on
+
+select:
+  - platform: template
+    name: ${friendly_name} time modus
+    optimistic: true
+    options:
+      - Minutes-plus
+      - Minutes-min
+    initial_option: Minutes-min
+    id: timemodus
+    
+number:
+  - platform: template
+    name: ${friendly_name} color cycle speed
+    optimistic: true
+    restore_value: on
+    min_value: 0
+    max_value: 100
+    step: 1
+    id: ccspeed
+
 time:
   - platform: homeassistant
     id: current_time
