@@ -8,6 +8,8 @@ const uint8_t PixelPin = RX;  // make sure to set this to the correct pin, ignor
 // NeoPixelBrightnessBus<NeoGrbwFeature, NeoEsp8266Uart1800KbpsMethod> strip(PixelCount, PixelPin);
 NeoPixelBrightnessBus<NeoGrbwFeature, NeoEsp8266DmaSk6812Method> strip(PixelCount, PixelPin);
 
+//LED definitions. First led should be 0.
+
 int leds_time_it_is[] = {113,93,92, 72, 53}; // ES IST
 int leds_minutes[] = {114, 12, 1, 103}; // Minutes LEDS
 
