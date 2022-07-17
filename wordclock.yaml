@@ -54,11 +54,10 @@ sensor:
     id: ldr_raw
     name: ${friendly_name} LDR (raw)
     unit_of_measurement: "V"
-    icon: mdi:sine-wave
-    # filters:
-    #   - multiply: 3.3   
+    icon: mdi:sine-wave 
     update_interval: 0.1s
     filters:
+    #  - multiply: 3.3  
       - exponential_moving_average:
           send_every: 50
     
