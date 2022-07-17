@@ -4,13 +4,9 @@
 const uint16_t PixelCount = 114; // this example assumes 4 pixels, making it smaller will cause a failure
 const uint8_t PixelPin = RX;  // make sure to set this to the correct pin, ignored for Esp8266
 
+//Define your NeoPixel setup. Please read https://github.com/Makuna/NeoPixelBus/wiki/NeoPixelBus-object#neo-methods
 // NeoPixelBrightnessBus<NeoGrbwFeature, NeoEsp8266Uart1800KbpsMethod> strip(PixelCount, PixelPin);
 NeoPixelBrightnessBus<NeoGrbwFeature, NeoEsp8266DmaSk6812Method> strip(PixelCount, PixelPin);
-
-// esphome dependencies:
-// needs: esphome time --> id: current_time
-// needs: esphome neopixelbus --> id: neopixelbuslight
-// needs: esphome ldr --> id: ldr
 
 int leds_time_it_is[] = {113,93,92, 72, 53}; // ES IST
 int leds_minutes[] = {114, 12, 1, 103}; // Minutes LEDS
@@ -223,12 +219,12 @@ class Wordclock : public Component, public CustomAPIDevice {
                         strip.ClearTo(RgbColor(0, 0, 0));
                         for(int i = 0; i < 17; i++) {
                             if(s == 50 || s == 51){
-                                strip.SetPixelColor(cijfer_links[day / 10][i]-1, color);
-                                strip.SetPixelColor(cijfer_rechts[day % 10][i]-1, color);
+                                strip.SetPixelColor(cijfer_links[day / 10][i], color);
+                                strip.SetPixelColor(cijfer_rechts[day % 10][i], color);
                             }
                             else if(s == 52 || s == 53){
-                                strip.SetPixelColor(cijfer_links[month / 10][i]-1, color);
-                                strip.SetPixelColor(cijfer_rechts[month % 10][i]-1, color);  
+                                strip.SetPixelColor(cijfer_links[month / 10][i], color);
+                                strip.SetPixelColor(cijfer_rechts[month % 10][i], color);  
                             }
                         }
                         strip.Show();
@@ -249,19 +245,19 @@ class Wordclock : public Component, public CustomAPIDevice {
 
                         if(tm == "Minutes-plus"){
                             tmp_minute = (minute - (minute % 5)) / 5;
-                            for(int i = 0; i < minutessum; i++) {   strip.SetPixelColor(leds_minutes[i]-1, color);}  
+                            for(int i = 0; i < minutessum; i++) {   strip.SetPixelColor(leds_minutes[i], color);}  
                         }
                         else if(tm == "Minutes-min"){
                             tmp_minute = (minute + 4 - ((minute + 4) % 5)) / 5;
                             if (minutessum > 0) { 
-                                for(int i = minutessum-1; i < 4; i++) {   strip.SetPixelColor(leds_minutes[i]-1, color);} 
+                                for(int i = minutessum-1; i < 4; i++) {   strip.SetPixelColor(leds_minutes[i], color);} 
                             } 
                         }
 
-                        for(int i = 0; i < 5; i++) {            strip.SetPixelColor(leds_time_it_is[i]-1, color); }                        
-                        for(int i = 0; i < 13; i++) {           if(leds_time_minutes[tmp_minute][i] >= 0) { strip.SetPixelColor(leds_time_minutes[tmp_minute][i]-1, color); } }
-                        for(int i = 0; i < 6; i++) {            if(leds_time_hours[tmp_hour][i] >= 0) { strip.SetPixelColor(leds_time_hours[tmp_hour][i]-1, color); } }
-                        // for(int i = 0; i < minutessum; i++) {   strip.SetPixelColor(leds_minutes[i]-1, color);}   
+                        for(int i = 0; i < 5; i++) {            strip.SetPixelColor(leds_time_it_is[i], color); }                        
+                        for(int i = 0; i < 13; i++) {           if(leds_time_minutes[tmp_minute][i] >= 0) { strip.SetPixelColor(leds_time_minutes[tmp_minute][i], color); } }
+                        for(int i = 0; i < 6; i++) {            if(leds_time_hours[tmp_hour][i] >= 0) { strip.SetPixelColor(leds_time_hours[tmp_hour][i], color); } }
+                        // for(int i = 0; i < minutessum; i++) {   strip.SetPixelColor(leds_minutes[i], color);}   
                     
 
                         strip.Show();
